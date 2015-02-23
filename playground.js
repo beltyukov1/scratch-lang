@@ -1,14 +1,16 @@
-var scratch = require('./scratch');
-var terp = new scratch.Scratch();
+var words = require('./words');
+var Scratch = require('./scratch');
+
+var terp = new Scratch();
 
 // Check print words
-terp.addWords(scratch.PrintingWords);
+terp.addWords(words.PrintingWords);
 console.log('---PRINT---');
 terp.run("10 pstack");
 terp.run("1 2 3 print print print");
 
 // Check math words
-terp.addWords(scratch.MathWords);
+terp.addWords(words.MathWords);
 console.log('---MATH---');
 terp.run('2 2 + print');
 terp.run('3 3 * 4 4 * + sqrt print');
