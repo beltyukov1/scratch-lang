@@ -1,10 +1,17 @@
+function makeVariable(terp) {
+    var me = { value: 0 };
+    return function() {
+        terp.stack.push(me);
+    }
+}
+
 module.exports = {
-    // Recognize print-related words
+    // Print operations
     PrintingWords: {
         // Log and discard top of stack (TOS)
         "PRINT": function(terp) {
             if (terp.stack.length < 1) {
-                throw 'Not enough items on stack';
+                throw "Not enough items on stack";
             }
             var tos = terp.stack.pop();
             console.log("Top of stack:", tos);
@@ -14,7 +21,7 @@ module.exports = {
             console.log("Stack:", terp.stack, "<- TOS")
         }
     },
-    // Recognize certain math operations
+    // Math operations
     MathWords: {
         "+": function(terp) {
             if (terp.stack.length < 2) {
@@ -56,6 +63,7 @@ module.exports = {
             terp.stack.push(Math.sqrt(tos));
         }
     },
+    // Stack operations
     StackWords: {
         //Duplicate TOS
         "DUP": function(terp) {
@@ -105,6 +113,33 @@ module.exports = {
             terp.stack.push(_2os);
             terp.stack.push(tos);
             terp.stack.push(_3os);
+        }
+    },
+    VariableWords: {
+        // Read next word from input and make it a variable
+        "VAR": function(terp) {
+            var varName = terp.lexer.nextWord();
+            if (varName == null) {
+                throw "Unexpected end of input";
+            }
+            terp.define(varName, makeVariable(terp));
+        },
+        // Store value of 2OS into variable given by TOS
+        "STORE": function(terp) {
+            if (terp.stack.length < 2) {
+                throw "Not enough items on stack";
+            }
+            var reference = terp.stack.pop();
+            var newValue = terp.stack.pop();
+            reference.value = newValue;
+        },
+        // Replace reference to variable on TOS with its value
+        "FETCH": function(terp) {
+            if (terp.stack.length < 1) {
+                throw "Not enough items on stack";
+            }
+            var reference = terp.stack.pop();
+            terp.stack.push(reference.value);
         }
     }
 };

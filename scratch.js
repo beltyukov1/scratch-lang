@@ -9,12 +9,16 @@ var Scratch = function() {
         }
     };
 
+    this.define = function(word, code) {
+        dictionary[word.toUpperCase()] = code;
+    };
+
     this.run = function(text) {
-        var lexer = new ScratchLexer(text);
+        this.lexer = new ScratchLexer(text);
         var word;
         var numVal;
 
-        while (word = lexer.nextWord()) {
+        while (word = this.lexer.nextWord()) {
             word = word.toUpperCase();
             numVal = parseFloat(word);
             if (dictionary[word]) {
@@ -29,7 +33,7 @@ var Scratch = function() {
 };
 
 // Split input into words
-var ScratchLexer = function(text) {
+function ScratchLexer(text) {
     var words = text.split(/\s+/);
     var next = 0;
     this.nextWord = function() {
@@ -38,6 +42,6 @@ var ScratchLexer = function(text) {
         }
         return words[next++];
     };
-};
+}
 
 module.exports = Scratch;
